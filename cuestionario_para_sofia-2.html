@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Una preguntita para Sofía 💗</title>
+<style>
+:root{--pink:#e85d93;--deep:#9f2456;--pale:#fff0f6;--ink:#492638}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;padding:20px;background:linear-gradient(135deg,#fff0f6,#fce4ec 55%,#f7e8ff);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink)}
+.card{width:min(100%,560px);background:#fffdfd;border:1px solid #f8c7da;border-radius:26px;padding:clamp(22px,5vw,36px);box-shadow:0 18px 55px #a33a651c;text-align:center}
+.heart{font-size:38px;margin-bottom:6px}
+h1{font-size:clamp(26px,6vw,36px);line-height:1.15;margin:8px 0 12px;color:var(--deep)}
+p{line-height:1.6}
+.muted{color:#876477;font-size:14px}
+button{border:0;border-radius:14px;padding:13px 18px;font-size:16px;font-weight:700;cursor:pointer;transition:transform .12s ease}
+button:active{transform:scale(.98)}
+.primary{background:var(--pink);color:white;box-shadow:0 6px 16px #e85d9333}
+.secondary{background:#fff0f6;color:var(--deep);border:1px solid #f4c4d7}
+.actions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px}
+.progress{height:7px;background:#f9dce8;border-radius:99px;overflow:hidden;margin:18px 0 24px}
+.bar{height:100%;width:0;background:var(--pink);transition:width .2s}
+.question{font-size:22px;font-weight:750;margin:20px 0}
+.choices{display:grid;gap:10px;margin-top:20px}
+.choices button{width:100%;background:#fff3f8;color:var(--deep);border:1px solid #f4c4d7}
+.choices button:hover{background:#ffe3ef}
+.hidden{display:none!important}
+.big{font-size:24px;color:var(--deep);font-weight:800}
+</style>
+</head>
+<body>
+<main class="card">
+  <section id="welcome">
+    <div class="heart">💗🌷</div>
+    <h1>Una preguntita para Sofía</h1>
+    <p>Hice estas preguntitas para vos. Respondé con sinceridad y tranqui, no hay respuestas incorrectas. 💌</p>
+    <button class="primary" id="start">Empezar 💕</button>
+    <p class="muted">Un pequeño cuestionario hecho con cariño.</p>
+  </section>
+  <section id="quiz" class="hidden">
+    <div class="muted" id="counter"></div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="question" id="question"></div>
+    <div class="choices" id="choices"></div>
+  </section>
+  <section id="final" class="hidden">
+    <div class="heart">💖🥹💖</div>
+    <h1>Sofía, tengo algo que preguntarte...</h1>
+    <p>Me gustás mucho y quería preguntártelo de una forma especial.</p>
+    <div class="question">¿Querés ser mi novia? 💗</div>
+    <div class="choices">
+      <button id="yes">Sí 💘</button>
+      <button id="no">No, prefiero que sigamos siendo amigos 💕</button>
+    </div>
+  </section>
+  <section id="yesResult" class="hidden">
+    <div class="heart">😭💗🌎</div>
+    <h1>¡Me hacés muy feliz!</h1>
+    <p class="big">Sí, te reamo y me hacés el hombre más feliz del mundo. 💖</p>
+    <p>Gracias por darme esta oportunidad, Sofía. Quiero que lo nuestro sea lindo, con cariño, confianza y respeto.</p>
+    <button class="secondary" id="restartYes">Volver al inicio</button>
+  </section>
+  <section id="noResult" class="hidden">
+    <div class="heart">🫶🌷</div>
+    <h1>Está todo bien, Sofía</h1>
+    <p>No pasa nada si no sentís lo mismo. Vamos a seguir siendo amigos y voy a respetar lo que sentís. No quiero que te sientas presionada. 💗</p>
+    <button class="secondary" id="restartNo">Volver al inicio</button>
+  </section>
+</main>
+<script>
+const questions = [
+  {q:"¿Qué pensaste de mí la primera vez que hablamos?", a:["Me caíste bien 😊","Me dio curiosidad conocerte","No sabía qué pensar","No me acuerdo mucho"]},
+  {q:"¿Te gusta hablar conmigo?", a:["Sí, bastante 💗","Sí, está bueno","A veces","Todavía no hablamos tanto"]},
+  {q:"¿Te saco una sonrisa cuando te llega un mensaje mío?", a:["Sí, obvio 🥹","A veces","No me había fijado","Todavía no"]},
+  {q:"¿Te gustaría que habláramos más seguido?", a:["Sí 💕","Puede ser","Como amigos está bien","No estoy segura"]},
+  {q:"¿Qué es lo que más valorás en una persona?", a:["Que me haga reír","Que me escuche","Que sea sincera","Que me respete"]},
+  {q:"¿Te gustaría que nos conociéramos más?", a:["Sí, me encantaría 🌷","Sí, de a poquito","Como amigos","No estoy segura"]},
+  {q:"¿Alguna vez pensaste en cómo sería salir conmigo?", a:["Sí 🙈","Un poquito","No lo había pensado","Prefiero no decir"]},
+  {q:"¿Qué harías si te dijera que me gustás?", a:["Me pondría feliz 💗","Me daría vergüenza","Querría hablarlo","No sabría qué decir"]},
+  {q:"¿Creés que una amistad puede convertirse en algo más?", a:["Sí, puede pasar","Sí, si los dos quieren","A veces","No siempre"]},
+  {q:"¿Querés que te pregunte algo importante?", a:["Sí, preguntame 💌","Dale, te escucho","Me da curiosidad","Bueno 😊"]}
+];
+const $ = id => document.getElementById(id);
+let index = 0;
+const sections = ["welcome","quiz","final","yesResult","noResult"];
+function show(id){sections.forEach(s=>$(s).classList.toggle("hidden",s!==id));}
+function renderQuestion(){
+  const item=questions[index];
+  $("counter").textContent=`Pregunta ${index+1} de ${questions.length}`;
+  $("bar").style.width=`${(index/questions.length)*100}%`;
+  $("question").textContent=item.q;
+  const choices=$("choices"); choices.innerHTML="";
+  item.a.forEach(answer=>{
+    const b=document.createElement("button"); b.textContent=answer;
+    b.addEventListener("click",()=>{
+      index++;
+      if(index<questions.length) renderQuestion();
+      else {show("final"); $("bar").style.width="100%";}
+    });
+    choices.appendChild(b);
+  });
+}
+function restart(){index=0;show("welcome");}
+$("start").addEventListener("click",()=>{index=0;show("quiz");renderQuestion();});
+$("yes").addEventListener("click",()=>show("yesResult"));
+$("no").addEventListener("click",()=>show("noResult"));
+$("restartYes").addEventListener("click",restart);
+$("restartNo").addEventListener("click",restart);
+</script>
+</body>
+</html>
